@@ -43,7 +43,47 @@ if (!customElements.get('product-form')) {
 
         fetch(`${routes.cart_add_url}`, config)
           .then((response) => response.json())
-          .then((response) => {
+          .then(async(response) => {
+
+            //checking if handbag is added in the cart then adding soft jacket
+            if(response.options_with_values[0].value == "Medium" && response.options_with_values[1].value == "Black" && response.product_title == "Handbag"){
+              var cart = await fetch('/cart.js', {
+                credentials: 'same-origin',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'X-Requested-with':'xmlhttprequest'
+                },
+                method: 'GET'
+              });
+
+              var body = await cart.json();
+
+              const productisalreadyadded = body.items.find(item => item.variant_id == "40758130999369");
+
+              if(!productisalreadyadded){
+                let formData = {
+                  'items': [{
+                   'id': 40758130999369,
+                   'quantity': 1
+                   }]
+                 };
+
+                 fetch(window.Shopify.routes.root + 'cart/add.js', {
+                   method: 'POST',
+                   headers: {
+                     'Content-Type': 'application/json'
+                   },
+                   body: JSON.stringify(formData)
+                 })
+                 .then(response => {
+                   return response.json();
+                 })
+                 .catch((error) => {
+                   console.error('Error:', error);
+                 });
+              }
+            }
+
             if (response.status) {
               publish(PUB_SUB_EVENTS.cartError, {
                 source: 'product-form',

@@ -1264,3 +1264,34 @@ class ProductRecommendations extends HTMLElement {
 }
 
 customElements.define('product-recommendations', ProductRecommendations);
+
+//Triggering click on Size variant on change from dropdown
+document.querySelector(".select-size").addEventListener("change", function () {
+  var selectedValue = this.value;
+  var radioButtons = document.querySelectorAll('input[name="Size"]');
+
+  radioButtons.forEach(function (radioButton) {
+    if (radioButton.value === selectedValue) {
+      radioButton.click();
+    }
+  });
+});
+
+
+//disabling add to cart button on unselected variation
+const sizeSelect = document.querySelector('.select-size');
+const productForm = document.querySelector('.product-form');
+
+function toggleDisabledClass() {
+  if (sizeSelect.value === 'Unselected') {
+    productForm.classList.add('disabled');
+  } else {
+    productForm.classList.remove('disabled');
+  }
+}
+
+// Call the function on page load
+toggleDisabledClass();
+
+// Add an event listener to the select element
+sizeSelect.addEventListener('change', toggleDisabledClass);

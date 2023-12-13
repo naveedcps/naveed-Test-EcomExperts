@@ -1,3 +1,8 @@
+// defining variables for removing soft jacket from the cart based on the handbag
+
+const hangbag_id = 40760388321353;
+const softjacket_id = 40758130999369;
+
 class CartRemoveButton extends HTMLElement {
   constructor() {
     super();
@@ -168,6 +173,7 @@ class CartItems extends HTMLElement {
         }
 
         publish(PUB_SUB_EVENTS.cartUpdate, { source: 'cart-items', cartData: parsedState, variantId: variantId });
+        this.productbundle(parsedState);
       })
       .catch(() => {
         this.querySelectorAll('.loading__spinner').forEach((overlay) => overlay.classList.add('hidden'));
@@ -177,6 +183,19 @@ class CartItems extends HTMLElement {
       .finally(() => {
         this.disableLoading(line);
       });
+  }
+
+  //Function to remove the soft jacked with handbag
+  productbundle(parsedState){
+    var items = parsedState.items;
+
+    const handbagproduct = items.find(item => item.variant_id == hangbag_id);
+    const softjacketproduct = items.find(item => item.variant_id == softjacket_id);
+
+    if(!handbagproduct && softjacketproduct){
+      var jacketline = document.querySelector('[data-quantity-variant-id="40758130999369"]');
+      this.updateQuantity(jacketline.dataset.index, 0);
+    }
   }
 
   updateLiveRegions(line, message) {
